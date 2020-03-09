@@ -3,24 +3,29 @@ import cv2
 from matplotlib import pyplot as plt
 
 
+def Matching(num_of_columns, occlusion_value):
+    CostMatrix = np.zeros((num_of_columns, num_of_columns))
+    for i in range(0, num_of_columns):
+        CostMatrix[i][0] = i * occlusion_value
+        CostMatrix[0][i] = i * occlusion_value
+    return CostMatrix
+
 def calculate_STEREO(ImageRight, ImageLeft):
     num_of_rows = ImageRight.shape[0]
     num_of_columns = ImageLeft.shape[1]
+
     # Initiate the disparity arrays with 0's
     disparity_left = np.zeros((num_of_rows, num_of_columns))
     disparity_right = np.zeros((num_of_rows, num_of_columns))
+
     # Set occlusion value (given as 3.8)
     occlusion_value = 12
 
     for all_rows in range(0, num_of_rows):
         # Inform the user of the process made so far
         print("processing " + str(all_rows) + " / " + str(num_of_rows))
-        CostMatrix = np.zeros((num_of_columns, num_of_columns))
         DisparityMatrix = np.zeros((num_of_columns, num_of_columns))
-
-        for i in range(0, num_of_columns):
-            CostMatrix[i][0] = i * occlusion_value
-            CostMatrix[0][i] = i * occlusion_value
+        CostMatrix = Matching(num_of_columns, occlusion_value)
 
         for i in range(0, num_of_columns):
             for j in range(0, num_of_columns):
@@ -59,18 +64,29 @@ def calculate_STEREO(ImageRight, ImageLeft):
                 disparity_right[all_rows][j] = 0
                 j = j - 1
 
-    depth = (disparity_left * 255) / np.amax(disparity_left)
-    plt.subplot(111), plt.imshow(disparity_left, cmap='gray')
-    plt.title('Left Disparity'), plt.xticks(), plt.yticks()
+    Draw(disparity_left)
+    Write(disparity_left)
+
+def Draw(disparity_left):
+    depth_left = (disparity_left * 255) / np.amax(disparity_left)
+    plt.imshow(depth_left, cmap='gray')
+    plt.colorbar()
     plt.show()
 
+def Write(disparity):
+    filename = "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW2/Results"
+    cv2.imwrite(filename, disparity)
 
 def main():
-    leftIMAGE = cv2.imread(
-        "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW/venv/view1.png", 0)
+    StereoPair_1_1 = "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW2/Stereo Pairs/Pair 1/view1.png"
+    StereoPair_1_2 = "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW2/Stereo Pairs/Pair 1/view2.png"
+
+    StereoPair_2_1 = "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW2/Stereo Pairs/Pair 3/view1.png"
+    StereoPair_2_2 = "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW2/Stereo Pairs/Pair 3/view2.png"
+
+    leftIMAGE = cv2.imread(StereoPair_2_1, 0)
     leftIMG = np.asarray(leftIMAGE, dtype=np.uint8)
-    rightIMAGE = cv2.imread(
-        "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW/venv/view2.png", 0)
+    rightIMAGE = cv2.imread(StereoPair_2_2, 0)
     rightIMG = np.asarray(rightIMAGE, dtype=np.uint8)
 
     calculate_STEREO(leftIMG, rightIMG)
