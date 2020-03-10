@@ -19,7 +19,7 @@ def calculate_STEREO(ImageRight, ImageLeft):
     disparity_right = np.zeros((num_of_rows, num_of_columns))
 
     # Set occlusion value (given as 3.8)
-    occlusion_value = 7
+    occlusion_value = 10
 
     for all_rows in range(0, num_of_rows):
         # Inform the user of the process made so far
@@ -30,10 +30,13 @@ def calculate_STEREO(ImageRight, ImageLeft):
         # Iterate through single rows of each of the images, comparing their greyscale value intensities
         for i in range(0, num_of_columns):
             for j in range(0, num_of_columns):
+                # average = (ImageLeft[all_rows][i] + ImageRight[all_rows][j]) / 2
+                # cost_of_match = 0.5 * ((((average - ImageLeft[all_rows][i]) ** 2) / 16) + (((average - ImageRight[all_rows][j]) ** 2) / 16))
                 if ImageLeft[all_rows][i] > ImageRight[all_rows][j]:
                     cost_of_match = ImageLeft[all_rows][i] - ImageRight[all_rows][j]
                 else:
                     cost_of_match = ImageRight[all_rows][j] - ImageLeft[all_rows][i]
+                # cost_of_match = ((ImageRight[all_rows][j] + ImageLeft[all_rows][i]) ** 2) / 16
 
                 minimum_one = CostMatrix[i - 1][j - 1] + cost_of_match
                 minimum_two = CostMatrix[i - 1][j] + occlusion_value
@@ -71,7 +74,7 @@ def calculate_STEREO(ImageRight, ImageLeft):
     # Write(disparity_left)
 
 def Draw(disparity_left):
-    disparity_left = disparity_left + 128
+    disparity_left = disparity_left
     depth_left = (disparity_left * 255) / np.amax(disparity_left)
     plt.imshow(depth_left, cmap='gray')
     plt.colorbar()
@@ -93,10 +96,14 @@ def main():
     StereoPair_3_1 = "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW2/Stereo Pairs/Pair 3/view1.png"
     StereoPair_3_2 = "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW2/Stereo Pairs/Pair 3/view2.png"
 
+    # Random Dot pair of test images
+    StereoPair_4_1 = "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW2/venv/left.png"
+    StereoPair_4_2 = "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW2/venv/right.png"
+
     # Read and process both images
-    leftIMAGE = cv2.imread(StereoPair_2_1, 0)
+    leftIMAGE = cv2.imread(StereoPair_4_1, 0)
     leftIMG = np.asarray(leftIMAGE, dtype=np.uint8)
-    rightIMAGE = cv2.imread(StereoPair_2_2, 0)
+    rightIMAGE = cv2.imread(StereoPair_4_2, 0)
     rightIMG = np.asarray(rightIMAGE, dtype=np.uint8)
 
     calculate_STEREO(leftIMG, rightIMG)
