@@ -2,7 +2,6 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-
 def Matching(num_of_columns, occlusion_value):
     CostMatrix = np.zeros((num_of_columns, num_of_columns))
     for i in range(0, num_of_columns):
@@ -19,7 +18,7 @@ def calculate_STEREO(ImageRight, ImageLeft):
     disparity_right = np.zeros((num_of_rows, num_of_columns))
 
     # Set occlusion value (given as 3.8)
-    occlusion_value = 10
+    occlusion_value = 12
 
     for all_rows in range(0, num_of_rows):
         # Inform the user of the process made so far
@@ -36,7 +35,7 @@ def calculate_STEREO(ImageRight, ImageLeft):
                     cost_of_match = ImageLeft[all_rows][i] - ImageRight[all_rows][j]
                 else:
                     cost_of_match = ImageRight[all_rows][j] - ImageLeft[all_rows][i]
-                # cost_of_match = ((ImageRight[all_rows][j] + ImageLeft[all_rows][i]) ** 2) / 16
+                # cost_of_match = ((abs(ImageRight[all_rows][j] - ImageLeft[all_rows][i])) ** 2) / 16
 
                 minimum_one = CostMatrix[i - 1][j - 1] + cost_of_match
                 minimum_two = CostMatrix[i - 1][j] + occlusion_value
@@ -100,10 +99,13 @@ def main():
     StereoPair_4_1 = "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW2/venv/left.png"
     StereoPair_4_2 = "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW2/venv/right.png"
 
+    test1 = "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW2/Stereo Pairs/test/view1.png"
+    test2 = "/Users/albert.ov11/Desktop/OneDrive - University College London/Algorithms/CW2/Stereo Pairs/test/view2.PNG"
+
     # Read and process both images
-    leftIMAGE = cv2.imread(StereoPair_4_1, 0)
+    leftIMAGE = cv2.imread(test1, 0)
     leftIMG = np.asarray(leftIMAGE, dtype=np.uint8)
-    rightIMAGE = cv2.imread(StereoPair_4_2, 0)
+    rightIMAGE = cv2.imread(test2, 0)
     rightIMG = np.asarray(rightIMAGE, dtype=np.uint8)
 
     calculate_STEREO(leftIMG, rightIMG)
