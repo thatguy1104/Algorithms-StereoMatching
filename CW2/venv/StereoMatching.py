@@ -18,7 +18,7 @@ def calculate_STEREO(ImageRight, ImageLeft):
     disparity_right = np.zeros((num_of_rows, num_of_columns))
 
     # Set occlusion value (given as 3.8)
-    occlusion_value = 12
+    occlusion_value = 8
 
     for all_rows in range(0, num_of_rows):
         # Inform the user of the process made so far
